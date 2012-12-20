@@ -28,7 +28,7 @@ def load_cached_tasks(cache_file):
 
 def parse_new_task(task_str, active=False):
     """
-    @ for estimated priority
+    $ for priority
     # for label
     """
     priority = 5
@@ -120,4 +120,6 @@ def format_task(index, task):
         print_str += colored("#{0} ".format(label), "green")
     return print_str
 
-def delay_priority_upgrade(
+def delay_priority_upgrade(params):
+    # at some later date, you want to upgrade the priority of a task
+    pass
