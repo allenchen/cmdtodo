@@ -24,7 +24,7 @@ def resolve_task_id(task_id):
     pass
 
 def load_cached_tasks(cache_file):
-    f = open("/tmp/todo_pickle", "r")
+    f = open("/tmp/cmdtodo_cached", "r")
 
 def parse_new_task(task_str, active=False):
     """
@@ -51,9 +51,7 @@ def parse_new_task(task_str, active=False):
     return {'text': text.strip(),
             'labels': labels,
             'priority': priority,
-            'count': 0,
             'contact': contact,
-            'due': str(due),
             'notes': notes,
             'active': active,
             'done': False}
