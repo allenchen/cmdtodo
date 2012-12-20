@@ -1,6 +1,5 @@
 import xmlrpclib
 import client_base
-from client_base import TaskSet
 
 stub = xmlrpclib.ServerProxy("http://localhost:8889")
 
