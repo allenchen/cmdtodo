@@ -50,6 +50,7 @@ class TodoService():
         task = Task(snapshot=input_task)
         task.id = self.get_unique_id()
         self.task_store.add_task(task)
+        print "Added task: " + str(task)
         return task
 
     def complete_task(self, input_task):

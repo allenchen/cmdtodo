@@ -42,8 +42,9 @@ def synchronize_cached_store():
         dump_cached_tasks()
 
 def add_task(task):
-    cached_store.stub.add_task(task)
+    val = cached_store.stub.add_task(task)
     synchronize_cached_store()
+    return Task(snapshot=val)
 
 # Utility functions
 
@@ -87,10 +88,8 @@ def main():
 
     if args.action == "add":
         query = " ".join(args.query)
-        result = Task(
-            snapshot=add_task(client_formatting.parse_new_task(query)))
-        print "Added task #" + str(result.id)
-    print cached_store.pending_tasks
+        result = add_task(client_formatting.parse_new_task(query))
+        print result
 
 if __name__ == "__main__":
     main()
