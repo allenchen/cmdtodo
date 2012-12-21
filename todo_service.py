@@ -21,8 +21,6 @@ class TodoService():
 
     def increment_snapshot_version(self):
         self.snapshot_version += 1
-
-    def get_snapshot_version(self):
         return self.snapshot_version
 
     def get_active_snapshot(self):
@@ -33,3 +31,33 @@ class TodoService():
 
     def get_completed_snapshot(self):
         return self.task_store.completed_tasks
+
+    def get_all_snapshots(self):
+        return {
+            "pending_tasks": self.task_store.pending_tasks,
+            "active_tasks": self.task_store.active_tasks,
+            "completed_tasks": self.task_store.completed_tasks
+            }
+
+    def get_all_versions(self):
+        return {
+            "pending_tasks": self.task_store.pending_tasks.version,
+            "active_tasks": self.task_store.active_tasks.version,
+            "completed_tasks": self.task_store.completed_tasks.version
+            }
+
+    def add_task(self, input_task):
+        task = Task(snapshot=input_task)
+        task.id = self.get_unique_id()
+        self.task_store.add_task(task)
+        return task
+
+    def complete_task(self, input_task):
+        task = Task(snapshot=input_task)
+        self.task_store.complete_task(task)
+        return task
+
+    def activate_task(self, input_task):
+        task = Task(snapshot=input_task)
+        self.task_store.activate_task(task)
+        return task

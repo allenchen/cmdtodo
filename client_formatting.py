@@ -1,3 +1,5 @@
+from client_base import Task, TaskSet, ClientTaskStore
+
 def parse_new_task(task_str, active=False):
     """
     Given a string that denotes a user supplied string that describes a task,
@@ -31,8 +33,9 @@ def parse_new_task(task_str, active=False):
 
     return task
 
-def list_tasks(stub):
-    print
+def list_tasks(stub, task_store):
+    
+
     mapper = {}
     incomplete = task_store.get_incomplete_tasks()
     today = []

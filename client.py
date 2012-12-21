@@ -1,5 +1,5 @@
-"""Client for the TODO service.  Most of this is borrowed from @amatsukawa from
-his version of this app at github.com/amatsukawa/todo_cli"""
+"""Client for the TODO service.  A lot of client functions are borrowed from
+@amatsukawa from his version of this app at github.com/amatsukawa/todo_cli"""
 
 from datetime import datetime, date
 from subprocess import call
@@ -10,10 +10,15 @@ import xmlrpclib
 import os
 import sys
 import client_formatting
+import pickle
 
 EDITOR = os.environ.get("EDITOR", "emacs")
 
-cached_tasks = []
+CACHED_STORE_PATH = "/tmp/cmdtodo.store"
+
+SERVER_PATH = "http://localhost:8889"
+
+cached_store = ClientTaskStore(None)
 
 # if EDITOR == "vim":
 #     raise IllegalEditorException
@@ -21,8 +26,24 @@ cached_tasks = []
 def resolve_task_id(task_id):
     pass
 
-def load_cached_tasks(cache_file):
-    f = open("/tmp/cmdtodo_cached", "r")
+def load_cached_tasks():
+    cached_store = pickle.load(CACHED_STORE_PATH)
+
+def dump_cached_tasks():
+    cached_store_fh = open(CACHED_STORE_PATH, "w")
+    tmp_stub = cached_store.stub
+    cached_store.stub = None
+    pickle.dump(cached_store, cached_store_fh)
+    cached_store_fh.close()
+    cached_store.stub = tmp_stub
+
+def synchronize_cached_store():
+    if cached_store.synchronize_all():
+        dump_cached_tasks()
+
+def add_task(task):
+    cached_store.stub.add_task(task)
+    synchronize_cached_store()
 
 # Utility functions
 
@@ -56,11 +77,20 @@ def make_argparser():
     argument_parser = argparse.ArgumentParser()
     argument_parser.add_argument("action")
     argument_parser.add_argument("query", nargs='*')
-
     return argument_parser.parse_args()
 
 def main():
     args = make_argparser()
+    stub = xmlrpclib.ServerProxy(SERVER_PATH)
+    cached_store.stub = stub
+    synchronize_cached_store()
+
+    if args.action == "add":
+        query = " ".join(args.query)
+        result = Task(
+            snapshot=add_task(client_formatting.parse_new_task(query)))
+        print "Added task #" + str(result.id)
+    print cached_store.pending_tasks
 
 if __name__ == "__main__":
     main()
