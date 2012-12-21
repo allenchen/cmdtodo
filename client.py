@@ -3,22 +3,20 @@ his version of this app at github.com/amatsukawa/todo_cli"""
 
 from datetime import datetime, date
 from subprocess import call
+from client_base import Task, TaskSet, ClientTaskStore
 
+import argparse
 import xmlrpclib
-import parsedatetime.parsedatetime as pdt
-import parsedatetime.parsedatetime_consts as pdc
-
-
-date_consts = pdc.Constants()
-date_parser = pdt.Calendar(date_consts)
+import os
+import sys
+import client_formatting
 
 EDITOR = os.environ.get("EDITOR", "emacs")
 
 cached_tasks = []
 
 # if EDITOR == "vim":
-#     raise IllegalEditorException, "Please specify a usable editor."
-#     sys.exit(0)
+#     raise IllegalEditorException
 
 def resolve_task_id(task_id):
     pass
@@ -26,35 +24,10 @@ def resolve_task_id(task_id):
 def load_cached_tasks(cache_file):
     f = open("/tmp/cmdtodo_cached", "r")
 
-def parse_new_task(task_str, active=False):
-    """
-    $ for priority
-    # for label
-    """
-    priority = 5
-    labels = []
-    text = ''
-    notes = ''
-    contact = ''
+# Utility functions
 
-    for word in task_str.split():
-        if word.startswith("$"):
-            priority = int(word[1:])
-        elif word.startswith("@"):
-            contact = word[1:]
-        elif word.startswith("#"):
-            labels.append(word[1:])
-            text += word + " "
-        else:
-            text += word + " "
-
-    return {'text': text.strip(),
-            'labels': labels,
-            'priority': priority,
-            'contact': contact,
-            'notes': notes,
-            'active': active,
-            'done': False}
+def assign_task_id(task, stub):
+    task.id = stub.get_unique_id()
 
 def edit_notes(params, view=True):
     task_num = params[0]
@@ -74,50 +47,20 @@ def edit_notes(params, view=True):
     else:
         print content
 
-def list_tasks(params):
-    print
-    mapper = {}
-    incomplete = task_store.get_incomplete_tasks()
-    today = []
-    rest = []
-    for task in incomplete:
-        if task['today']:
-            today.append(task)
-        else:
-            rest.append(task)
-    today = sorted(today, key=lambda x: (parse_date(x['due']), x['text'].lower()))
-    rest = sorted(rest, key=lambda x: (parse_date(x['due']), x['text'].lower()))
-    i = 0
-    for task in today:
-        mapper[str(i)] = task["_id"]
-        print format_task(i, task)
-        i += 1
-    print "\n---\n"
-    for task in rest:
-        mapper[str(i)] = task["_id"]
-        print format_task(i, task)
-        i += 1
-    f = open("/tmp/todo_pickle", "w")
-    pickle.dump(mapper, f)
-    f.close()
-    print
-
-def format_task(index, task):
-    print_str = "[{0}]    ".format(index)
-    now = datetime.now().date()
-    due = parse_date(task['due'])
-    if now > due:
-        print_str += colored("{due}    ".format(**task), "red")
-    elif now < due:
-        print_str += colored("{due}    ".format(**task), "blue")
-    else:
-        print_str += colored("{due}    ".format(**task), "yellow")
-    print_str += colored("{0}/{1}    ".format(task['count'], task['est_count']), "cyan")
-    print_str += "{text}    ".format(**task)
-    for label in task['labels']:
-        print_str += colored("#{0} ".format(label), "green")
-    return print_str
 
 def delay_priority_upgrade(params):
     # at some later date, you want to upgrade the priority of a task
     pass
+
+def make_argparser():
+    argument_parser = argparse.ArgumentParser()
+    argument_parser.add_argument("action")
+    argument_parser.add_argument("query", nargs='*')
+
+    return argument_parser.parse_args()
+
+def main():
+    args = make_argparser()
+
+if __name__ == "__main__":
+    main()

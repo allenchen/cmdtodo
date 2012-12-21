@@ -11,19 +11,9 @@ class TodoService():
         self.id_counter = 0
         self.task_store = ServerTaskStore()
 
-        ##################
-        #    Testing     #
-        ##################
-
-        t1 = Task()
-        t1.id = 12
-        t1.text = "Finish todo service"
-        t1.labels = ["github", "personalprojects"]
-        t1.priority = 3
-        t1.contact = "allench"
-        t1.notes = "yay"
-        t1.active = False
-        self.task_store.add_pending_task(t1)
+    def pre_cleanup(self):
+        # do stuff like delay_priority_upgrade checks
+        pass
 
     def get_unique_id(self):
         self.id_counter += 1
