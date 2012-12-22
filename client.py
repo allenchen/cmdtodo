@@ -46,11 +46,6 @@ def add_task(task):
     synchronize_cached_store()
     return Task(snapshot=val)
 
-# Utility functions
-
-def assign_task_id(task, stub):
-    task.id = stub.get_unique_id()
-
 def edit_notes(params, view=True):
     task_num = params[0]
     task_id = task_tmp[task_num]
