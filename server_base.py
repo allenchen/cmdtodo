@@ -50,7 +50,7 @@ class ServerTaskStore():
 
         if bucket_tag == "ACTIVE":
             bucket = self.active_tasks
-        elif bucket_tag "COMPLETED":
+        elif bucket_tag == "COMPLETED":
             bucket = self.completed_tasks
         else:
             bucket = self.pending_tasks
